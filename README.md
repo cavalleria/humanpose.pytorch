@@ -4,6 +4,9 @@
 ## Introduction
 This is an human pose estimation pytorch implementation derivated from [deep-high-resolution-net.pytorch](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch), aims to achieve lightweight real-time application.
 
+## Features
+    * [x] It support Distributed DataParallel training, much faster than origin repo
+
 ## Main Results
 ### Results on MPII val
 | Arch               | Head | Shoulder | Elbow | Wrist |  Hip | Knee | Ankle | Mean | Mean@0.1 |
