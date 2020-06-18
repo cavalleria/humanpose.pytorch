@@ -6,7 +6,7 @@ This is an human pose estimation pytorch implementation derivated from [deep-hig
 
 ## Features
 - [x] It support Distributed DataParallel training, much faster than origin repo.
-- [ ] support lightweight backbones
+- [] support lightweight backbones.
 
 ## Main Results
 ### Results on MPII val
@@ -20,7 +20,7 @@ This is an human pose estimation pytorch implementation derivated from [deep-hig
 |--------------------|------------|---------|--------|-------|-------|--------|--------|--------|-------|-------|--------|--------|--------|
 
 ## Environment
-The code is developed using python 3.6 on Ubuntu 16.04. NVIDIA GPUs are needed. The code is developed and tested using 4 NVIDIA P100 GPU cards. Other platforms or GPU cards are not fully tested.
+The code is developed using python 3.6 on Ubuntu 16.04. NVIDIA GPUs are needed. The code is developed and tested using 8 NVIDIA V100 GPU cards. Other platforms or GPU cards are not fully tested.
 
 ## Quick start
 ### Installation
