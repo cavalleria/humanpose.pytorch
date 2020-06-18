@@ -210,7 +210,7 @@ def main_worker(gpu, ngpus_per_node, args, final_output_dir, tb_log_dir):
     for epoch in range(begin_epoch, cfg.TRAIN.END_EPOCH):
         
         # train for one epoch
-        train(cfg, train_loader, model, criterion, optimizer, epoch,
+        train(args, cfg, train_loader, model, criterion, optimizer, epoch,
               final_output_dir, tb_log_dir, writer_dict)
 
         # In PyTorch 1.1.0 and later, you should call `lr_scheduler.step()` after `optimizer.step()`.
@@ -218,7 +218,7 @@ def main_worker(gpu, ngpus_per_node, args, final_output_dir, tb_log_dir):
 
         # evaluate on validation set
         perf_indicator = validate(
-            cfg, valid_loader, valid_dataset, model, criterion,
+            args, cfg, valid_loader, valid_dataset, model, criterion,
             final_output_dir, tb_log_dir, writer_dict
         )
 
