@@ -7,7 +7,7 @@ This is an human pose estimation pytorch implementation derivated from [deep-hig
 ## Features
 - [x] It support Distributed DataParallel training, much faster than origin repo.
 - [ ] support lightweight pose backbones.
-- [ ] support lightweight detect backbones.
+- [ ] support lightweight mobile hunman detector.
 
 ## Main Results
 ### Results on MPII val
