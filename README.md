@@ -14,7 +14,7 @@ This is an human pose estimation pytorch implementation derivated from [deep-hig
 | Arch               | Head | Shoulder | Elbow | Wrist |  Hip | Knee | Ankle | Mean | Mean@0.1 |
 |--------------------|------|----------|-------|-------|------|------|-------|------|----------|
 | **pose_hrnet_w32** | 97.067 | 95.686 | 90.21 | 85.644 | 89.077 | 85.795 | 82.711 | 89.927 | 37.931 |
-| **pose_hrnet_w48** |  |  |  |  |  |  |  |  |  |
+| **pose_hrnet_w48** | 96.930 | 95.771 | 90.864 | 86.329 | 88.731 | 86.862 | 82.829 | 90.208 | 38.002 |
 
 ### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 | Arch               | Input size | #Params | GFLOPs |    AP | Ap .5 | AP .75 | AP (M) | AP (L) |    AR | AR .5 | AR .75 | AR (M) | AR (L) |
