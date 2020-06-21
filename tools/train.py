@@ -163,7 +163,7 @@ def main_worker(gpu, ngpus_per_node, args, final_output_dir, tb_log_dir):
     train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
-        batch_size=cfg.TRAIN.BATCH_SIZE_PER_GPU,
+        batch_size=cfg.TRAIN.BATCH_SIZE_PER_GPU*len(cfg.GPUS),
         shuffle=(train_sampler is None),
         num_workers=cfg.WORKERS,
         pin_memory=cfg.PIN_MEMORY,
@@ -177,7 +177,6 @@ def main_worker(gpu, ngpus_per_node, args, final_output_dir, tb_log_dir):
         num_workers=cfg.WORKERS,
         pin_memory=cfg.PIN_MEMORY
     )
-
     logger.info(train_loader.dataset)
 
     best_perf = -1
@@ -204,9 +203,8 @@ def main_worker(gpu, ngpus_per_node, args, final_output_dir, tb_log_dir):
     for epoch in range(begin_epoch, cfg.TRAIN.END_EPOCH):
         
         # train for one epoch
-        train(args, cfg, train_loader, model, criterion, optimizer, epoch,
+        train(cfg, train_loader, model, criterion, optimizer, epoch,
               final_output_dir, tb_log_dir, writer_dict)
-
         # In PyTorch 1.1.0 and later, you should call `lr_scheduler.step()` after `optimizer.step()`.
         lr_scheduler.step()
 
