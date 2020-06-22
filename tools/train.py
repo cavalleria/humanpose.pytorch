@@ -117,6 +117,7 @@ def main_worker(gpu, ngpus_per_node, args, final_output_dir, tb_log_dir):
     logger, _ = setup_logger(final_output_dir, args.rank, 'train')
 
     model = eval('models.'+cfg.MODEL.NAME+'.get_pose_net')(cfg, is_train=True)
+    logger.info(get_model_summary(model, torch.zeros(1, 3, *cfg.MODEL.IMAGE_SIZE)))
 
     # copy model file
     if not cfg.MULTIPROCESSING_DISTRIBUTED or (cfg.MULTIPROCESSING_DISTRIBUTED and args.rank % ngpus_per_node == 0):

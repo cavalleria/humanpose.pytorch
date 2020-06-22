@@ -17,10 +17,11 @@ This is an human pose estimation pytorch implementation derivated from [deep-hig
 | **pose_hrnet_w48** | 96.930 | 95.771 | 90.864 | 86.329 | 88.731 | 86.862 | 82.829 | 90.208 | 38.002 |
 
 ### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
-| Arch               | Input size |    AP | Ap .5 | AP .75 | AP (M) | AP (L) |    AR | AR .5 | AR .75 | AR (M) | AR (L) |
+| Arch               | Input size | #Params | FLOPs |    AP | Ap .5 | AP .75 | AP (M) | AP (L) |    AR | AR .5 | AR .75 | AR (M) | AR (L) |
 |--------------------|------------|-------|-------|--------|--------|--------|-------|-------|--------|--------|--------|
-| **pose_hrnet_w18** | 256x192    | 0.572 | 0.863 | 0.644 | 0.545 | 0.614 | 0.612 | 0.876 | 0.687 | 0.579 | 0.661 |
-| **pose_hrnet_w32** | 256x192    | 0.765 | 0.936 | 0.838 | 0.740 | 0.810 | 0.794 | 0.945 | 0.858 | 0.763 | 0.842 |
+| **pose_hrnet_w18_v1** | 256x192    | 1.3M  | 0.68G | 0.572 | 0.863 | 0.644 | 0.545 | 0.614 | 0.612 | 0.876 | 0.687 | 0.579 | 0.661 |
+| **pose_hrnet_w18_v2** | 256x192    | 3.7M  | 1.8G |  |  |  |  |  |  |  |  |  |  |
+| **pose_hrnet_w32** | 256x192    | 28.5M |	7.1G  | 0.765 | 0.936 | 0.838 | 0.740 | 0.810 | 0.794 | 0.945 | 0.858 | 0.763 | 0.842 |
 
 ## Environment
 The code is developed using python 3.6 on Ubuntu 16.04. NVIDIA GPUs are needed. The code is developed and tested using 8 NVIDIA V100 GPU cards. Other platforms or GPU cards are not fully tested.

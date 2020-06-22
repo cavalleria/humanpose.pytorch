@@ -178,7 +178,7 @@ def parse_args():
     parser.add_argument('--cfg', type=str, required=True)
     parser.add_argument('--videoFile', type=str, required=True)
     parser.add_argument('--outputDir', type=str, default='/output/')
-    parser.add_argument('--inferenceFps', type=int, default=10)
+    parser.add_argument('--inferenceFps', type=int, default=20)
     parser.add_argument('--writeBoxFrames', action='store_true')
 
     parser.add_argument('opts',
@@ -310,9 +310,9 @@ def main():
         cv2.putText(image_debug, text, (100, 50), cv2.FONT_HERSHEY_SIMPLEX,
                             1, (0, 0, 255), 2, cv2.LINE_AA)
 
-        cv2.imshow("pos", image_debug)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        #cv2.imshow("pos", image_debug)
+        #if cv2.waitKey(1) & 0xFF == ord('q'):
+        #    break
 
         csv_output_rows.append(new_csv_row)
         img_file = os.path.join(pose_dir, 'pose_{:08d}.jpg'.format(count))
@@ -334,7 +334,7 @@ def main():
     vidcap.release()
     outcap.release()
 
-    cv2.destroyAllWindows()
+    #cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':

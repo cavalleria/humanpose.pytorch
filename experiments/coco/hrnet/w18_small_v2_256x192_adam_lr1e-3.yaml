@@ -26,7 +26,7 @@ MODEL:
   INIT_WEIGHTS: true
   NAME: pose_hrnet
   NUM_JOINTS: 17
-  PRETRAINED: 'models/pytorch/imagenet/hrnet_w32-36af842e.pth'
+  PRETRAINED: 'models/pytorch/imagenet/hrnet_w18_small_model_v2.pth'
   TARGET_TYPE: gaussian
   IMAGE_SIZE:
   - 192
@@ -54,39 +54,39 @@ MODEL:
       NUM_BRANCHES: 2
       BLOCK: BASIC
       NUM_BLOCKS:
-      - 4
-      - 4
+      - 2
+      - 2
       NUM_CHANNELS:
-      - 32
-      - 64
+      - 18
+      - 36
       FUSE_METHOD: SUM
     STAGE3:
-      NUM_MODULES: 4
+      NUM_MODULES: 3
       NUM_BRANCHES: 3
       BLOCK: BASIC
       NUM_BLOCKS:
-      - 4
-      - 4
-      - 4
+      - 2
+      - 2
+      - 2
       NUM_CHANNELS:
-      - 32
-      - 64
-      - 128
+      - 18
+      - 36
+      - 72
       FUSE_METHOD: SUM
     STAGE4:
-      NUM_MODULES: 3
+      NUM_MODULES: 2
       NUM_BRANCHES: 4
       BLOCK: BASIC
       NUM_BLOCKS:
-      - 4
-      - 4
-      - 4
-      - 4
+      - 2
+      - 2
+      - 2
+      - 2
       NUM_CHANNELS:
-      - 32
-      - 64
-      - 128
-      - 256
+      - 18
+      - 36
+      - 72
+      - 144
       FUSE_METHOD: SUM
 LOSS:
   USE_TARGET_WEIGHT: true
