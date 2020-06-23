@@ -131,3 +131,4 @@ dmypy.json
 # custom
 models/
 .history
+demo/*.mp4

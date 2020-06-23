@@ -238,9 +238,9 @@ def main():
         exit()
     skip_frame_cnt = round(fps / args.inferenceFps)
     frame_width = int(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    frame_height = int(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    frame_height = int(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT)) #int(skip_frame_cnt)
     outcap = cv2.VideoWriter('{}/{}_pose.avi'.format(args.outputDir, os.path.splitext(os.path.basename(args.videoFile))[0]),
-                             cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), int(skip_frame_cnt), (frame_width, frame_height))
+                             cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 20, (frame_width, frame_height))
 
     count = 0
     while vidcap.isOpened():
