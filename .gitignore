@@ -129,6 +129,6 @@ dmypy.json
 .pyre/
 
 # custom
-models/
+models/*
 .history
 demo/*.mp4

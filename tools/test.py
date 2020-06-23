@@ -1,8 +1,11 @@
 # ------------------------------------------------------------------------------
-# pose.pytorch
-# Copyright (c) 2018-present Microsoft
-# Licensed under The Apache-2.0 License [see LICENSE for details]
+# Copyright (c) Microsoft
+# Licensed under the MIT License.
 # Written by Bin Xiao (Bin.Xiao@microsoft.com)
+# ------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+# Updated by cavalleria (cavalleria@gmail.com)
 # ------------------------------------------------------------------------------
 
 from __future__ import absolute_import
