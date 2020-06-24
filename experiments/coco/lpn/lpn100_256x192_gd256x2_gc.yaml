@@ -13,12 +13,15 @@ PRINT_FREQ: 100
 DATASET:
   COLOR_RGB: true
   DATASET: 'coco'
+  DATA_FORMAT: jpg
+  FLIP: true
+  NUM_JOINTS_HALF_BODY: 8
+  PROB_HALF_BODY: 0.3
   ROOT: '../data/coco/'
+  ROT_FACTOR: 45
+  SCALE_FACTOR: 0.35
   TEST_SET: 'val2017'
   TRAIN_SET: 'train2017'
-  FLIP: true
-  ROT_FACTOR: 40
-  SCALE_FACTOR: 0.3
 MODEL:
   NAME: 'lpn'
   PRETRAINED: ''
@@ -70,6 +73,7 @@ TEST:
   MODEL_FILE: ''
   NMS_THRE: 1.0
   OKS_THRE: 0.9
+  USE_GT_BBOX: true
   FLIP_TEST: true
   POST_PROCESS: true
   SHIFT_HEATMAP: true
