@@ -11,7 +11,7 @@ WORKERS: 10
 PRINT_FREQ: 100
 
 DATASET:
-  COLOR_RGB: false
+  COLOR_RGB: true
   DATASET: 'coco'
   ROOT: '../data/coco/'
   TEST_SET: 'val2017'
@@ -73,10 +73,9 @@ TEST:
   FLIP_TEST: true
   POST_PROCESS: true
   SHIFT_HEATMAP: true
-  USE_GT_BBOX: false
   SOFT_ARGMAX: true
 DEBUG:
-  DEBUG: false
+  DEBUG: true
   SAVE_BATCH_IMAGES_GT: true
   SAVE_BATCH_IMAGES_PRED: true
   SAVE_HEATMAPS_GT: true
