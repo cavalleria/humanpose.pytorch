@@ -213,3 +213,50 @@ class LW_Bottleneck(nn.Module):
         out = self.relu(out)
 
         return out
+
+
+def conv3x3(in_planes, out_planes, stride=1, groups=1):
+    """3x3 convolution with padding"""
+    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, groups=groups,
+                     padding=1, bias=False)
+class LW_BasicBlock(nn.Module):
+    expansion = 1
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None, attention='GC'):
+        super(LW_BasicBlock, self).__init__()
+        self.conv1 = conv3x3(inplanes, planes, stride, groups=inplanes//2)
+        self.bn1 = nn.BatchNorm2d(planes, momentum=BN_MOMENTUM)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = conv3x3(planes, planes, groups=planes//2)
+        self.bn2 = nn.BatchNorm2d(planes, momentum=BN_MOMENTUM)
+        self.downsample = downsample
+        self.stride = stride
+
+        if attention == 'SE':
+            self.att = SELayer(planes * self.expansion)
+        elif attention == 'GC':
+            out_planes = planes * self.expansion // 16 if planes * self.expansion // 16 >= 16 else 16
+            self.att = GCBlock(planes * self.expansion, out_planes, 'att', ['channel_add'])
+        else:
+            self.att = None
+
+    def forward(self, x):
+        residual = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+
+        out = self.conv2(out)
+        out = self.bn2(out)
+
+        if self.att is not None:
+            out = self.att(out)
+        
+        if self.downsample is not None:
+            residual = self.downsample(x)
+
+        out += residual
+        out = self.relu(out)
+
+        return out
