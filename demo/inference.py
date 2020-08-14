@@ -8,6 +8,8 @@ import os
 import shutil
 
 from PIL import Image
+import matplotlib.lines as mlines
+import matplotlib.patches as mpatches
 import torch
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
@@ -31,6 +33,78 @@ from core.inference import get_final_preds
 from utils.transforms import get_affine_transform
 
 CTX = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+
+
+class ColorStyle:
+    def __init__(self, color, link_pairs, point_color):
+        self.color = color
+        self.link_pairs = link_pairs
+        self.point_color = point_color
+
+        for i in range(len(self.color)):
+            self.link_pairs[i].append(tuple(self.color[i]))
+
+        self.ring_color = []
+        for i in range(len(self.point_color)):
+            self.ring_color.append(tuple(self.point_color[i]))
+        
+# Xiaochu Style
+# (R,G,B)
+color1 = [(179,0,0),(228,26,28),(255,255,51),
+    (49,163,84), (0,109,45), (255,255,51),
+    (240,2,127),(240,2,127),(240,2,127), (240,2,127), (240,2,127), 
+    (217,95,14), (254,153,41),(255,255,51),
+    (44,127,184),(0,0,255)]
+
+link_pairs1 = [
+        [15, 13], [13, 11], [11, 5], 
+        [12, 14], [14, 16], [12, 6], 
+        [3, 1],[1, 2],[1, 0],[0, 2],[2,4],
+        [9, 7], [7,5], [5, 6],
+        [6, 8], [8, 10],
+        ]
+
+point_color1 = [(240,2,127),(240,2,127),(240,2,127), 
+            (240,2,127), (240,2,127), 
+            (255,255,51),(255,255,51),
+            (254,153,41),(44,127,184),
+            (217,95,14),(0,0,255),
+            (255,255,51),(255,255,51),(228,26,28),
+            (49,163,84),(252,176,243),(0,176,240),
+            (255,255,0),(169, 209, 142),
+            (255,255,0),(169, 209, 142),
+            (255,255,0),(169, 209, 142)]
+
+xiaochu_style = ColorStyle(color1, link_pairs1, point_color1)
+
+
+# Chunhua Style
+# (R,G,B)
+color2 = [(252,176,243),(252,176,243),(252,176,243),
+    (0,176,240), (0,176,240), (0,176,240),
+    (240,2,127),(240,2,127),(240,2,127), (240,2,127), (240,2,127), 
+    (255,255,0), (255,255,0),(169, 209, 142),
+    (169, 209, 142),(169, 209, 142), (45, 189, 54)]
+
+link_pairs2 = [
+        [15, 13], [13, 11], [11, 5], 
+        [12, 14], [14, 16], [12, 6], 
+        [3, 1],[1, 2],[1, 0],[0, 2],[2,4],
+        [9, 7], [7,5], [5, 6], [6, 8], [8, 10],[12, 11]
+        ]
+
+point_color2 = [(240,2,127),(240,2,127),(240,2,127), 
+            (240,2,127), (240,2,127), 
+            (255,255,0),(169, 209, 142),
+            (255,255,0),(169, 209, 142),
+            (255,255,0),(169, 209, 142),
+            (252,176,243),(0,176,240),(252,176,243),
+            (0,176,240),(252,176,243),(0,176,240),
+            (255,255,0),(169, 209, 142),
+            (255,255,0),(169, 209, 142),
+            (255,255,0),(169, 209, 142)]
+
+chunhua_style = ColorStyle(color2, link_pairs2, point_color2)
 
 
 COCO_KEYPOINT_INDEXES = {
@@ -171,6 +245,15 @@ def prepare_output_dirs(prefix='/output/'):
     os.makedirs(pose_dir, exist_ok=True)
     return pose_dir
 
+def map_joint_dict(joints):
+    joints_dict = {}
+    for i in range(joints.shape[0]):
+        x = int(joints[i][0])
+        y = int(joints[i][1])
+        id = i
+        joints_dict[id] = (x, y)
+        
+    return joints_dict
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train keypoints network')
@@ -239,13 +322,15 @@ def main():
     skip_frame_cnt = round(fps / args.inferenceFps)
     frame_width = int(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT)) #int(skip_frame_cnt)
-    outcap = cv2.VideoWriter('{}/{}_pose.avi'.format(args.outputDir, os.path.splitext(os.path.basename(args.videoFile))[0]),
-                             cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 20, (frame_width, frame_height))
+    outcap = cv2.VideoWriter('{}/{}_pose.mp4'.format(args.outputDir, os.path.splitext(os.path.basename(args.videoFile))[0]),
+                             cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 25, (frame_width, frame_height))
 
     count = 0
     while vidcap.isOpened():
         total_now = time.time()
         ret, image_bgr = vidcap.read()
+        if ret==0:
+            break
         count += 1
 
         if not ret:
@@ -297,29 +382,52 @@ def main():
         print("Find person pose in: {} sec".format(then - now))
 
         new_csv_row = []
+        
         for coords in pose_preds:
             # Draw each point on image
+            dt_joints = []
             for coord in coords:
                 x_coord, y_coord = int(coord[0]), int(coord[1])
-                cv2.circle(image_debug, (x_coord, y_coord), 4, (255, 0, 0), 2)
-                new_csv_row.extend([x_coord, y_coord])
+                #cv2.circle(image_debug, (x_coord, y_coord), 4, (255, 0, 0), 2)
+                #print('(x_coord, y_coord)', (x_coord, y_coord))
+                dt_joints.append(x_coord)
+                dt_joints.append(y_coord)
+                #new_csv_row.extend([x_coord, y_coord])
+            
+            dt_joints = np.array(dt_joints).reshape(17, -1)
+            joints_dict = map_joint_dict(dt_joints)
+            #print('joints_dict', joints_dict)
+            
 
-        total_then = time.time()
-
-        text = "{:03.2f} sec".format(total_then - total_now)
-        cv2.putText(image_debug, text, (100, 50), cv2.FONT_HERSHEY_SIMPLEX,
-                            1, (0, 0, 255), 2, cv2.LINE_AA)
-
-        #cv2.imshow("pos", image_debug)
-        #if cv2.waitKey(1) & 0xFF == ord('q'):
-        #    break
-
-        csv_output_rows.append(new_csv_row)
-        img_file = os.path.join(pose_dir, 'pose_{:08d}.jpg'.format(count))
-        cv2.imwrite(img_file, image_debug)
+            # stick 
+            link_pairs = chunhua_style.link_pairs
+            ring_color = chunhua_style.ring_color
+            for k, link_pair in enumerate(link_pairs):
+                #print('link_pair', link_pair)
+                cv2.line(image_debug,
+                        (joints_dict[link_pair[0]][0], joints_dict[link_pair[0]][1]),
+                        (joints_dict[link_pair[1]][0], joints_dict[link_pair[1]][1]),
+                        color=link_pair[2], thickness=3, lineType=cv2.LINE_AA)
+                #cv2.imwrite('img_debug.jpg', image_debug)
+                #input()
+                
+            # black ring
+            
+            for k in range(dt_joints.shape[0]):
+                cv2.circle(image_debug, tuple(dt_joints[k,:2]), 
+                                            radius=4, 
+                                            thickness=1,
+                                            color=[0,0,0])
+            
+        
+        #total_then = time.time()
+        #csv_output_rows.append(new_csv_row)
+        
+        #img_file = os.path.join(pose_dir, 'pose_{:08d}.jpg'.format(count))
+        #cv2.imwrite(img_file, image_debug)
         outcap.write(image_debug)
-
-
+        
+    '''
     # write csv
     csv_headers = ['frame']
     for keypoint in COCO_KEYPOINT_INDEXES.values():
@@ -330,12 +438,9 @@ def main():
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(csv_headers)
         csvwriter.writerows(csv_output_rows)
-
+    '''
     vidcap.release()
     outcap.release()
-
-    #cv2.destroyAllWindows()
-
 
 if __name__ == '__main__':
     main()
