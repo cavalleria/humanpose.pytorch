@@ -8,7 +8,7 @@ This is an human pose estimation pytorch implementation derivated from [deep-hig
 
 - [x] It support Distributed DataParallel training, much faster than origin repo.
 - [x] support lightweight pose backbones.
-- [ ] support lightweight mobile hunman detector.
+- [x] support lightweight mobile hunman detector [yolov3mobile](https://github.com/cavalleria/yolov3mobile).
 
 ## Main Results
 
