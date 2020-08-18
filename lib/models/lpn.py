@@ -3,7 +3,7 @@ import logging
 import math
 import torch
 import torch.nn as nn
-from .lightweight_modules import LW_Bottleneck, LW_BasicBlock
+from .lightweight_modules import LW_Bottleneck, LW_BasicBlock, MV2_BasicBlock
 
 BN_MOMENTUM = 0.1
 logger = logging.getLogger(__name__)
@@ -155,6 +155,7 @@ class LPN(nn.Module):
 
 
 resnet_spec = {
+    '18m': (MV2_BasicBlock, [1, 1, 1, 1]),
     18: (LW_BasicBlock, [2, 2, 2, 2]),
     34: (LW_BasicBlock, [3, 4, 6, 3]),
     50: (LW_Bottleneck, [3, 4, 6, 3]),

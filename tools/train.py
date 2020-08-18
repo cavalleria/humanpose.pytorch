@@ -195,7 +195,7 @@ def main_worker(gpu, ngpus_per_node, args, final_output_dir, tb_log_dir):
     last_epoch = -1
     optimizer = get_optimizer(cfg, model)
     begin_epoch = cfg.TRAIN.BEGIN_EPOCH
-    checkpoint_file = os.path.join(final_output_dir, 'checkpoint.pth.tar')
+    checkpoint_file = os.path.join(final_output_dir, 'checkpoint.pth')
     if cfg.AUTO_RESUME and os.path.exists(checkpoint_file):
         logger.info("=> loading checkpoint '{}'".format(checkpoint_file))
         checkpoint = torch.load(checkpoint_file)

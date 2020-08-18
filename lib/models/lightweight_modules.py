@@ -260,3 +260,78 @@ class LW_BasicBlock(nn.Module):
         out = self.relu(out)
 
         return out
+
+class InvertedResidual(nn.Module):
+    def __init__(self, inp, oup, stride=1, expand_ratio=1):
+        super(InvertedResidual, self).__init__()
+        assert stride in [1, 2]
+
+        hidden_dim = round(inp * expand_ratio)
+        self.identity = stride == 1 and inp == oup
+
+        if expand_ratio == 1:
+            self.conv = nn.Sequential(
+                # dw
+                nn.Conv2d(hidden_dim, hidden_dim, 3, stride, 1, groups=hidden_dim, bias=False),
+                nn.BatchNorm2d(hidden_dim),
+                nn.ReLU(inplace=True),
+                # pw-linear
+                nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
+                nn.BatchNorm2d(oup),
+            )
+        else:
+            self.conv = nn.Sequential(
+                # pw
+                nn.Conv2d(inp, hidden_dim, 1, 1, 0, bias=False),
+                nn.BatchNorm2d(hidden_dim),
+                nn.ReLU(inplace=True),
+                # dw
+                nn.Conv2d(hidden_dim, hidden_dim, 3, stride, 1, groups=hidden_dim, bias=False),
+                nn.BatchNorm2d(hidden_dim),
+                nn.ReLU(inplace=True),
+                # pw-linear
+                nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
+                nn.BatchNorm2d(oup),
+            )
+
+    def forward(self, x):
+        if self.identity:
+            return x + self.conv(x)
+        else:
+            return self.conv(x)
+
+class MV2_BasicBlock(nn.Module):
+    expansion = 1
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None, attention='GC'):
+        super(MV2_BasicBlock, self).__init__()
+        self.conv1 = InvertedResidual(inplanes, planes, stride)
+        #self.conv2 = InvertedResidual(planes, planes)
+
+        self.downsample = downsample
+        self.stride = stride
+
+        if attention == 'SE':
+            self.att = SELayer(planes * self.expansion)
+        elif attention == 'GC':
+            out_planes = planes * self.expansion // 16 if planes * self.expansion // 16 >= 16 else 16
+            self.att = GCBlock(planes * self.expansion, out_planes, 'att', ['channel_add'])
+        else:
+            self.att = None
+
+    def forward(self, x):
+        residual = x
+
+        out = self.conv1(x)
+
+        #out = self.conv2(out)
+
+        if self.att is not None:
+            out = self.att(out)
+        
+        if self.downsample is not None:
+            residual = self.downsample(x)
+
+        out += residual
+
+        return out
